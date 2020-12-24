@@ -4,8 +4,6 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
 
 ## Sumário
 
-<!-- TOC -->autoauto- [Programando microcontroladores MSP430 no Raspberry Pi](#programando-microcontroladores-msp430-no-raspberry-pi)auto    - [Sumário](#sumário)auto    - [O microcontrolador MSP430](#o-microcontrolador-msp430)auto    - [O Raspberry Pi](#o-raspberry-pi)auto    - [Requerimentos](#requerimentos)autoauto<!-- /TOC -->
-
 ## O microcontrolador MSP430
 
 ## O Raspberry Pi
@@ -17,4 +15,12 @@ Para este tutorial serão necessários os seguinte materiais:
  - Um Raspberry Pi de qualquer tipo;
  - Catão microSD com o Raspberry Pi OS instalado;
  - Fonte de alimentação para o Raspberry Pi;
- - Cabo HDMI ()
+ - Cabo HDMI;
+ - Monitor, teclado e mouse; e
+ - Kit de desenvolvimento MSP-EXP430G2ET (ou equivalente).
+
+ Além desses materiais o usuário deverá possuir algum conhecimento básico de:
+
+ - Microcontroladores;
+ - Linguagem de programação C/C++;
+ - Sistema Operacional Linux.
