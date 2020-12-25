@@ -7,7 +7,7 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
 ## O microcontrolador MSP430
 
 O termo MSP430 se refere a uma arquitetura de microcontroladores RISC (acrônimo de _Reduced Instruction Set Computer_; em português, "Computador com um conjunto reduzido de instruções") de 16 bits e arquitetura von-Neumann. É desenvolvido e comercializado pela [Texas Instruments](https://www.ti.com/microcontrollers/msp430-ultra-low-power-mcus/overview.html), com foco em baixo custo e baixo consumo de energia. Dependendo do modo de economia de energia da CPU, o chip pode chegar num consumo tão baixo quanto 100 nA. Uma imagem ilustrativa de um MSP430 pode ser vista na 
-[Figura 1](msp430).
+[Figura 1](#msp430).
 
 |![msp430](./figuras/MSP430_small.png "imagem ilustrativa do msp340")|
 |:---:|
