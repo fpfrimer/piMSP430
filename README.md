@@ -1,4 +1,4 @@
-# Programando microcontroladores MSP430 no Raspberry Pi
+# Programando MSP430 no Raspberry Pi
 
 Este tutorial tem como objetivo apresentar uma metodologia para programar microcontroladores MSP430 através do Raspberry Pi. Os procedimentos apresentados aqui são baseados em outro [tutorial](https://sergioprado.org/trabalhando-com-o-msp430-no-linux/) desenvolvido por Sergio Prado em sua página eletrônica [sergioprado.org](sergioprado.org), onde o foco é a programação do MSP430 no sistema Linux.
 
@@ -8,18 +8,10 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
 
 O termo MSP430 se refere a uma arquitetura de microcontroladores RISC (acrônimo de _Reduced Instruction Set Computer_; em português, "Computador com um conjunto reduzido de instruções") de 16 bits e arquitetura von-Neumann. É desenvolvido e comercializado pela [Texas Instruments](https://www.ti.com/microcontrollers/msp430-ultra-low-power-mcus/overview.html), com foco em baixo custo e baixo consumo de energia. Dependendo do modo de economia de energia da CPU, o chip pode chegar num consumo tão baixo quanto 100 nA.
 
-<div style="text-align:center">
-  <img src="./figuras/MSP430.png" height="150">
-  
-  __Figura 1 - O microcontrolador MSP430__
-</div>
 
-<!---
-  ![msp430](./figuras/MSP430.png)
---->
-
-
-
+|![msp430](./figuras/MSP430_small.png)|
+|:---:|
+|__Figura 1 - O microcontrolador MSP430__|
 
 
 Possui diversos modelos, com um conjunto de periféricos bastante diversificado. Além disso, o fabricante oferece exemplos de programação de todos os periféricos, o que facilita muito o desenvolvimento de aplicações. Esses exemplos podem ser encontrados [clicando aqui](https://dev.ti.com/) (pode ser necessário criar uma conta).
