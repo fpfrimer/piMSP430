@@ -14,6 +14,7 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
   - [Requerimentos para a execução deste Tutorial](#requerimentos-para-a-execução-deste-tutorial)
   - [Instalando as ferramentas de desenvolvimento](#instalando-as-ferramentas-de-desenvolvimento)
   - [Criando códigos e Programando](#criando-códigos-e-programando)
+  - [Depurando (_debugando_) o código](#depurando-debugando-o-código)
 
 ## O microcontrolador MSP430
 
@@ -155,4 +156,46 @@ int main(void){
     }
 }
 ```
+
+Alternativamente, pode-se baixar o código através do comando:
+
+```C
+wget https://raw.githubusercontent.com/fpfrimer/piMSP430/main/codes/pisca.c
+```
+
+Para compilar, basta passar o modelo da CPU (mude de acordo com o chip que você esta usando):
+
+```C
+msp430-gcc -Os -mmcu=msp430g2553 pisca.c -o pisca.elf
+```
+Agora conecte o kit de desenvolvimento em uma das portas USB do Raspberry Pi. Isso deve criar um dispositivo do tipo ttyACM, que você consegue visualizar nas mensagens de log do kernel através do comando dmseg.
+
+Para gravar no kit basta chamar a ferramenta mspdebug:
+
+```Console
+sudo mspdebug rf2500
+```
+
+Primeiro, programe o arquivo elf gerado:
+
+```Console
+(mspdebug) prog blink.elf
+```
+
+E depois execute a aplicação:
+
+```Console
+(mspdebug) run
+```
+
+É importante observar que em nenhum momento foi criado o _linker script_. O processo de compilação gerou um arquivo do tipo ELF, padrão para arquivos executáveis. O compilador, de acordo com a opção “-mmcu“, já organizou o código (seções text, data, bss) de forma que a ferramenta mspdebug possa interpretar estas informações, para então endereçar e gravar corretamente os dados na memória flash do microcontrolador.
+
+A ferramenta mspdebug possui muitas opções. Para uma lista completa das funcionalidades desta ferramenta, acesse sua página de manual:
+
+```Console
+man mspdebug
+```
+
+## Depurando (_debugando_) o código
+
 
