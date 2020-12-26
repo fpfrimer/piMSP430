@@ -133,7 +133,7 @@ nano pisca.c
 ```
 Entre com o seguinte código:
 
-```C
+```C {.line-numbers}
 #include <msp430g2553.h>
 
 #define LED1 0x01
