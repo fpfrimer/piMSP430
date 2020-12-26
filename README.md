@@ -13,6 +13,7 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
   - [O Raspberry Pi](#o-raspberry-pi)
   - [Requerimentos para a execução deste Tutorial](#requerimentos-para-a-execução-deste-tutorial)
   - [Instalando as ferramentas de desenvolvimento](#instalando-as-ferramentas-de-desenvolvimento)
+  - [Criando códigos e Programando](#criando-códigos-e-programando)
 
 ## O microcontrolador MSP430
 
@@ -94,8 +95,64 @@ Estas ferramentas fazem parte do projeto [mspgcc](http://www.ti.com/tool/msp430-
 Para instalar as ferramentas do mspgcc, abra uma instancia de terminal do Rasberry Pi OS e atualize os repositórios:
 
 ```console
-pi@raspberry:~ $ sudo apt-get update
+sudo apt-get update
 ```
 
-E instale as ferramentas:
+Em seguida, instale as ferramentas:
+
+
+```console
+sudo apt-get install msp430-libc mspdebug msp430mcu binutils-msp430 gcc-msp430 gdb-msp430
+```
+
+Depois de executado o comando acima, pode-se verificar se o _toolchain_ foi devidamente instalado executando o seguinte comando:
+
+```console
+msp430-gcc --version
+```
+
+Se tudo estiver certo, o comando deve retornar a versão do _software_ instalado e mais algumas informações, algo parecido com:
+
+```console {.line-numbers}
+msp430-gcc --version
+msp430-gcc (GCC) 4.6.3 20120301 (mspgcc LTS 20120406 unpatched)
+Copyright (C) 2011 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
+Para outros procedimentos de instalação, acesse a página do projeto [mspgcc](http://www.ti.com/tool/msp430-gcc-opensource).
+
+## Criando códigos e Programando
+
+Para demostrar o fluxo de projeto utilizando as ferramentas instaladas, um simples código para piscar os dois LEDs do kit MSP-EXP430G2 será utilizado. Primeiramente, é recomendável criar uma pasta para o projeto. Em seguida,
+crie o código fonte utilizando o editor de sua preferencia. Para usuários iniciantes recomenda-se utilizar o nano:
+
+```console
+nano pisca.c
+```
+Entre com o seguinte código:
+
+```C
+#include <msp430g2553.h>
+
+#define LED1 0x01
+#define LED2 0x40
+
+int main(void){
+
+    volatile int i = 0;         // Contador
+
+    WDTCTL = WDTPW | WDTHOLD;   // Parar WDT
+
+    P1DIR = LED1 + LED2;        // Pinos como saídas
+    P1OUT = 0X00;               // Apaga os LEDs
+
+    while(1){
+        // Alterna estado dos LEDs
+        P1OUT ^= LED1 | LED2; 
+        for(i = 0; i < 10000; i++); // Atraso
+    }
+}
+```
 
