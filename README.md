@@ -37,7 +37,7 @@ O MSP-EXP430G2ET é o um do modelos mais simples e baratos que permite usar os m
 |:---:|
 |__Figura 2 - MSP-EXP430G2ET LaunchPad: kit de desenvolvimento__|
 
-Assim como o Arduino, o kit MSP-EXP430G2ET possui diversos pinos digitais de entrada e saída (GPIO), permitindo muita versatilidade aos projetos. Além disso, também possui dois LEDs e um botão. Como vantagem em relação à maioria dos modelos de Arduínos, essa placa possui embutida um gravador/depurador de código, permitindo a execução passo-a-passo das instruções.
+Assim como o Arduino, o kit MSP-EXP430G2ET possui diversos pinos digitais de entrada e saída (GPIO), permitindo muita versatilidade aos projetos. Além disso, também possui dois LEDs e um botão. Como vantagem em relação à maioria dos modelos de Arduinos, essa placa possui embutida um gravador/depurador de código, permitindo a execução passo-a-passo das instruções.
 
 ### O kit MSP-EXP430G2
 
@@ -77,4 +77,25 @@ Para este tutorial serão necessários os seguinte materiais:
  - Sistema Operacional Linux.
 
 ## Instalando as ferramentas de desenvolvimento
-Em breve
+
+Para o MSP430, existem diversas ferramentas _open source_ para o desenvolvimento de projetos. Neste tutorial serão utilizadas as seguintes aplicações:
+
+- __gcc-msp430__: Porte do gcc (GNU C compiler) para o MSP430;
+- __binutils-msp430__: Ferramentas de manipulação de binários (linker, assembler, etc) para o MSP430;
+- __msp430mcu__: Arquivos de cabeçalho, _spec files_ e scripts do linker;
+- __msp430-libc__: Biblioteca C padrão;
+- __gdb-msp430__: GNU _Debugger_ para o MSP430; e
+- __mspdebug__: Ferramenta de gravação e _debugging_ do MSP430.
+
+Estas ferramentas fazem parte do projeto [mspgcc](http://www.ti.com/tool/msp430-gcc-opensource), e estão empacotadas para algumas distribuições GNU/Linux, incluindo o Ubuntu, Fedora e Raspberry Pi OS.
+
+É importante notar que, embora não existam limitações de tamanho de código ou tempo de uso (pois trata-se de um _software_ livre), o mspgcc não possui suporte à algumas características presentes em versões proprietárias de outros compiladores. É o caso de opções de otimização de código.
+
+Para instalar as ferramentas do mspgcc, abra uma instancia de terminal do Rasberry Pi OS e atualize os repositórios:
+
+```console
+pi@raspberry:~ $ sudo apt-get update
+```
+
+E instale as ferramentas:
+
