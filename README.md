@@ -14,7 +14,9 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
   - [Requerimentos para a execução deste Tutorial](#requerimentos-para-a-execução-deste-tutorial)
   - [Instalando as ferramentas de desenvolvimento](#instalando-as-ferramentas-de-desenvolvimento)
   - [Criando códigos e Programando](#criando-códigos-e-programando)
+  - [[Opcional] _Shell Script_ para compilação](#opcional-shell-script-para-compilação)
   - [Depurando (_debugando_) o código](#depurando-debugando-o-código)
+    - [O mspdebug](#o-mspdebug)
 
 ## O microcontrolador MSP430
 
@@ -82,7 +84,7 @@ Para este tutorial serão necessários os seguinte materiais:
 
 Para o MSP430, existem diversas ferramentas _open source_ para o desenvolvimento de projetos. Neste tutorial serão utilizadas as seguintes aplicações:
 
-- __gcc-msp430__: Porte do gcc (GNU C compiler) para o MSP430;
+- [__gcc-msp430__](https://www.systutorials.com/docs/linux/man/1-msp430-gcc/): Porte do gcc (GNU C compiler) para o MSP430;
 - __binutils-msp430__: Ferramentas de manipulação de binários (linker, assembler, etc) para o MSP430;
 - __msp430mcu__: Arquivos de cabeçalho, _spec files_ e scripts do linker;
 - __msp430-libc__: Biblioteca C padrão;
@@ -91,7 +93,7 @@ Para o MSP430, existem diversas ferramentas _open source_ para o desenvolvimento
 
 Estas ferramentas fazem parte do projeto [mspgcc](http://www.ti.com/tool/msp430-gcc-opensource), e estão empacotadas para algumas distribuições GNU/Linux, incluindo o Ubuntu, Fedora e Raspberry Pi OS.
 
-É importante notar que, embora não existam limitações de tamanho de código ou tempo de uso (pois trata-se de um _software_ livre), o mspgcc não possui suporte à algumas características presentes em versões proprietárias de outros compiladores. É o caso de opções de otimização de código.
+<!---É importante notar que, embora não existam limitações de tamanho de código ou tempo de uso (pois trata-se de um _software_ livre), o mspgcc não possui suporte à algumas características presentes em versões proprietárias de outros compiladores. É o caso de opções de otimização de código.--->
 
 Para instalar as ferramentas do mspgcc, abra uma instancia de terminal do Rasberry Pi OS e atualize os repositórios:
 
@@ -168,7 +170,7 @@ Para compilar, basta passar o modelo da CPU (mude de acordo com o chip que você
 ```C
 msp430-gcc -Os -mmcu=msp430g2553 pisca.c -o pisca.elf
 ```
-Agora conecte o kit de desenvolvimento em uma das portas USB do Raspberry Pi. Isso deve criar um dispositivo do tipo ttyACM, que você consegue visualizar nas mensagens de log do kernel através do comando dmseg.
+Agora conecte o kit de desenvolvimento em uma das portas USB do Raspberry Pi. Isso deve criar um dispositivo do tipo ttyACM, que você consegue visualizar nas mensagens de log do kernel através do comando `dmseg`.
 
 Para gravar no kit basta chamar a ferramenta mspdebug:
 
@@ -196,6 +198,58 @@ A ferramenta mspdebug possui muitas opções. Para uma lista completa das funcio
 man mspdebug
 ```
 
+## [Opcional] _Shell Script_ para compilação
+
+Para tornar o processo de compilação mais rápido, o usuário pode criar um arquivo _Shell Script_ para compilar o código. Para isso, crie um arquivo de texto com o seguinte comando:
+
+```Console
+echo "msp430-gcc -Os -mmcu=msp430g2553 pisca.c -o pisca.elf" > build
+```
+
+Neste caso, foi criado um arquivo nomeado como "build", sem extensão, mas o usuário pode colocar o nome que achar mais adequado.
+
+Posteriormente, inclua permissão de execução no arquivo recém criado através do comando `chmod`:
+
+```Console
+sudo chmod +x build
+```
+
+Para compilar basta executar o arquivo:
+
+```Console
+./build
+```
+
 ## Depurando (_debugando_) o código
+
+O processo de depuração, também conhecido pela expressão em inglês _debug_ (remoção de _bugs_), pode exigir do usuário um conhecimento grande sobre sobre o microcontrolador e da ferramenta de depuração. No caso do __mspdebug__ e do __msp430-gdb__, por não existir um interface gráfica, o processo de depuração pode ser complicado para usuários iniciantes ou, até mesmo, intermediários. Dessa forma, é recomendado a leitura do manual da ferramenta (`man mspdebug` e `man msp430-gdb`) e o estudo aprofundado sobre microcontroladores, especialmente o msp430.
+
+Esta seção tem o intuito de introduzir o assunto, mostrando um exemplo fluxo de trabalho para utilização do msp430-gdb em conjunto com o mspdebug.
+
+### O mspdebug
+
+O mspdebug é uma ferramenta acessada por linha de comando para depuração e programação para a família de microcontroladores MSP430. Como já visto no exemplo da seção [Criando códigos e Programando](#criando-códigos-e-programando), o mspdebug pode ser iniciado com o seguinte comando:
+
+```Console
+sudo mspdebug rf2500
+```
+
+O termo rf2500 é o nome do programador/depurador presente nos kits launchpad. Dessa forma, o usuário deve verificar o manual ao utilizar outra ferramenta. Até o momento utilizamos os comandos `prog` e `run` para programar e rodar o código compilado, respectivamente. Outros comando úteis serão apresentados na Tabela 1.
+
+|Comando|Função| Exemplos de utilização|
+|---|---|---|
+|`prog <arquivo>`|programa o arquivo binário na memória flash do MSP430|`prog pisca.elf`|
+|`erase`|limpa a memória do MSP430|`erase`|
+|`run`|inicia a execução do programa|`run`|
+|`reset`|reinicia a aplicação, retorna ao endereço de _reset_| `reset`|
+|`regs`|mostra o estado dos registradores principais do MSP430|`regs`|
+|`step [n]`|Executa `n` instruções, uma se não indicar a quantidade|`step`, `step 5`|
+|`setbreak [endereço]`|posiciona um _breakpoint_ em um endereço de memória|`setbreak 0xc010 `|
+|`delbreak`|remove os _breakpoints_|`delbreak`|
+|`break`|lista os _breakpoints_ disponíveis|`break`|
+|`gdb [port]`|cria um serviço de depuração remoto para o gdb|`gdb 2000`|
+
+O comando `regs` é muito importante para o usuário verificar o que está sendo executado no momento. Com ele é possível visualizar o conteúdo dos principais registradores do MSP430, como é o caso do PC, SP e SR.
+
 
 
