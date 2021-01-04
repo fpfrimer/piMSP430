@@ -17,6 +17,7 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
   - [[Opcional] _Shell Script_ para compilação](#opcional-shell-script-para-compilação)
   - [Depurando (_debugando_) o código](#depurando-debugando-o-código)
     - [O mspdebug](#o-mspdebug)
+  - [Fluxo de trabalho simplificado](#fluxo-de-trabalho-simplificado)
 
 ## O microcontrolador MSP430
 
@@ -234,7 +235,8 @@ O mspdebug é uma ferramenta acessada por linha de comando para depuração e pr
 sudo mspdebug rf2500
 ```
 
-O termo rf2500 é o nome do programador/depurador presente nos kits launchpad. Dessa forma, o usuário deve verificar o manual ao utilizar outra ferramenta. Até o momento utilizamos os comandos `prog` e `run` para programar e rodar o código compilado, respectivamente. Outros comando úteis serão apresentados na Tabela 1.
+O termo rf2500 é o nome do programador/depurador presente nos kits launchpad. Dessa forma, o usuário deve verificar o manual ao utilizar outra ferramenta. Até o momento foi apresentado os comandos `prog` e `run` para programar e rodar o código compilado, respectivamente. Outros comando úteis são apresentados na Tabela 1.
+
 
 |Comando|Função| Exemplos de utilização|
 |---|---|---|
@@ -248,8 +250,38 @@ O termo rf2500 é o nome do programador/depurador presente nos kits launchpad. D
 |`delbreak`|remove os _breakpoints_|`delbreak`|
 |`break`|lista os _breakpoints_ disponíveis|`break`|
 |`gdb [port]`|cria um serviço de depuração remoto para o gdb|`gdb 2000`|
+__Tabela 1 - Lista de alguns comandos do mspdebug__
 
-O comando `regs` é muito importante para o usuário verificar o que está sendo executado no momento. Com ele é possível visualizar o conteúdo dos principais registradores do MSP430, como é o caso do PC, SP e SR.
+O comando `regs` é muito importante para o usuário verificar o que está sendo executado no momento. Com ele é possível visualizar o conteúdo dos principais registradores do MSP430, como é o caso do PC, SP e SR. Além disso, também é possível visualizar o _disassembly_, veja o resultado do comando:
 
+```
+(mspdebug) regs
+    ( PC: 0c014)  ( R4: 08175)  ( R8: 0cbf5)  (R12: 084f4)  
+    ( SP: 00400)  ( R5: 05a08)  ( R9: 0ffd7)  (R13: 02e65)  
+    ( SR: 00000)  ( R6: 07db6)  (R10: 03cf9)  (R14: 07786)  
+    ( R3: 00000)  ( R7: 0bff7)  (R11: 02591)  (R15: 00000)  
+__wdt_clear_value+0xbe14:
+    0c014: 0f 93                     TST     R15
+    0c016: 08 24                     JZ      0xc028
+    0c018: 92 42 00 02 20 01         MOV     &__wdt_clear_value, &0x0120
+    0c01e: 2f 83                     DECD    R15
+    0c020: 9f 4f                     
+    0c022: 7a c0 
+```
 
+Como pode ser notado, ao executar o comando `step`, o código pode ser executado instrução por instrução com base no código de máquina gerado no processo de compilação. Dessa forma, a depuração de um código escrito em linguagem C/C++ não é possível através do mspdebug. Neste sentido, a ferramenta msp430-gdb deve ser utilizada em conjunto com o mspdebug para depuração do código fonte.
+
+A próxima seção apresenta um fluxo de trabalho simplificado para depuração de projetos com microcontroladores MSP430.
+
+## Fluxo de trabalho simplificado
+
+Considere o seguinte projeto: 
+
+> Utilize os LEDs presentes no kit MSP-EXP430G2 Launchpad para realizar uma contagem de 0 à 3 e reiniciar a contagem sempre que o botão for pressionado. Note na Figura 6 que os LEDs estão conectados nos pinos P1.6 (GREEN_LED) e P1.0 (RED_LED), assim como o botão está no P1.3 (PUSH2).
+
+|[![kit3](./figuras/pinout.png "Pinagem do kit MSP-EXP430G2 Launchpad")](https://energia.nu/pinmaps/img/LaunchPadMSP430G2452-v1.5.jpg)|
+|:---:|
+|__Figura 6 - Pinagem do kit MSP-EXP430G2 Launchpad__|
+
+Ao desenvolver o projeto, o usuário pode obter o seguinte código:
 
