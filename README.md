@@ -18,6 +18,12 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
   - [Depurando (_debugando_) o código](#depurando-debugando-o-código)
     - [O mspdebug](#o-mspdebug)
   - [Fluxo de trabalho simplificado](#fluxo-de-trabalho-simplificado)
+    - [Passo 1 - Desenvolver o código inicial](#passo-1---desenvolver-o-código-inicial)
+    - [Passo 2 - Compilando o código](#passo-2---compilando-o-código)
+    - [Passo 3 - Gravando o código](#passo-3---gravando-o-código)
+    - [Passo 4 - Conectando ao _stub_ remoto para depuração](#passo-4---conectando-ao-stub-remoto-para-depuração)
+    - [Passo 4 - Depurando o código](#passo-4---depurando-o-código)
+  - [Conclusão](#conclusão)
 
 ## O microcontrolador MSP430
 
@@ -162,13 +168,13 @@ int main(void){
 
 Alternativamente, pode-se baixar o código através do comando:
 
-```C
+```Console
 wget https://raw.githubusercontent.com/fpfrimer/piMSP430/main/codes/pisca.c
 ```
 
 Para compilar, basta passar o modelo da CPU (mude de acordo com o chip que você esta usando):
 
-```C
+```Console
 msp430-gcc -Os -mmcu=msp430g2553 pisca.c -o pisca.elf
 ```
 Agora conecte o kit de desenvolvimento em uma das portas USB do Raspberry Pi. Isso deve criar um dispositivo do tipo ttyACM, que você consegue visualizar nas mensagens de log do kernel através do comando `dmseg`.
@@ -182,7 +188,7 @@ sudo mspdebug rf2500
 Primeiro, programe o arquivo elf gerado:
 
 ```Console
-(mspdebug) prog blink.elf
+(mspdebug) prog pisca.elf
 ```
 
 E depois execute a aplicação:
@@ -190,6 +196,16 @@ E depois execute a aplicação:
 ```Console
 (mspdebug) run
 ```
+
+Pressione Ctrl+C para finalizar a execução. Digite o comando `exit` para sair do mspdebug.
+
+Alternativamente, pode-se utilizar um único comando para o processo de gravação:
+
+```Console
+sudo mspdebug rf2500 "prog pisca.elf"
+```
+
+A diferença deste último comando é que o microcontrolador será programado, o código executado e o mspdebug será fechado.
 
 É importante observar que em nenhum momento foi criado o _linker script_. O processo de compilação gerou um arquivo do tipo ELF, padrão para arquivos executáveis. O compilador, de acordo com a opção “-mmcu“, já organizou o código (seções text, data, bss) de forma que a ferramenta mspdebug possa interpretar estas informações, para então endereçar e gravar corretamente os dados na memória flash do microcontrolador.
 
@@ -204,7 +220,7 @@ man mspdebug
 Para tornar o processo de compilação mais rápido, o usuário pode criar um arquivo _Shell Script_ para compilar o código. Para isso, crie um arquivo de texto com o seguinte comando:
 
 ```Console
-echo "msp430-gcc -Os -mmcu=msp430g2553 pisca.c -o pisca.elf" > build
+echo "msp430-gcc -g -Os -mmcu=msp430g2553 pisca.c -o pisca.elf" > build
 ```
 
 Neste caso, foi criado um arquivo nomeado como "build", sem extensão, mas o usuário pode colocar o nome que achar mais adequado.
@@ -215,7 +231,7 @@ Posteriormente, inclua permissão de execução no arquivo recém criado atravé
 sudo chmod +x build
 ```
 
-Para compilar basta executar o arquivo:
+Para compilar, basta executar o arquivo:
 
 ```Console
 ./build
@@ -275,13 +291,181 @@ A próxima seção apresenta um fluxo de trabalho simplificado para depuração 
 
 ## Fluxo de trabalho simplificado
 
-Considere o seguinte projeto: 
+Considere o seguinte projeto exemplo: 
 
-> Utilize os LEDs presentes no kit MSP-EXP430G2 Launchpad para realizar uma contagem de 0 à 3 e reiniciar a contagem sempre que o botão for pressionado. Note na Figura 6 que os LEDs estão conectados nos pinos P1.6 (GREEN_LED) e P1.0 (RED_LED), assim como o botão está no P1.3 (PUSH2).
+> Utilize os dois LEDs presentes no kit MSP-EXP430G2 Launchpad para realizar uma contagem de 0 à 3 em binário. Note na Figura 6 que os LEDs estão conectados nos pinos P1.6 (GREEN_LED) e P1.0 (RED_LED).
+> 
+> |[![kit3](./figuras/pinout.png "Pinagem do kit MSP-EXP430G2 Launchpad")](https://energia.nu/pinmaps/img/LaunchPadMSP430G2452-v1.5.jpg)|
+> |:---:|
+> |__Figura 6 - Pinagem do kit MSP-EXP430G2 Launchpad__|
 
-|[![kit3](./figuras/pinout.png "Pinagem do kit MSP-EXP430G2 Launchpad")](https://energia.nu/pinmaps/img/LaunchPadMSP430G2452-v1.5.jpg)|
-|:---:|
-|__Figura 6 - Pinagem do kit MSP-EXP430G2 Launchpad__|
+### Passo 1 - Desenvolver o código inicial
 
 Ao desenvolver o projeto, o usuário pode obter o seguinte código:
 
+```C
+  1 #include<msp430g2553.h>
+  2
+  3 #define     RED_LED     BIT0        // P1.0 - BIT0 da P1
+  4 #define     GREEN_LED   BIT6        // P1.6 - BIT6 da P1
+  5
+  6 int main(void){
+  7     volatile int i = 0, cont = 0;
+  8     volatile int delay = 20000;
+  9
+ 10     WDTCTL = WDTPW | WDTHOLD;       // Parar WDT
+ 11     P1DIR |= RED_LED + GREEN_LED;   // LEDs como saída
+ 12     P1OUT = 0;
+ 13
+ 14     while(1){
+ 15         for(i = 0; i <= delay; i++);// Atraso
+ 16         cont += 1;                  // Incrementa contador
+ 17
+ 18         /* Utiliza os dois bits menos significativos do contador */
+ 19         P1OUT = ((cont & BIT1) << 5) | (cont & BIT0);
+ 20     }
+ 21     return 0;
+ 22 }
+
+```
+
+Os números das linhas foram inseridos para facilitar a visualização do exemplo. Crie uma pasta para o projeto e copie o código em um arquivo nomeado como `contador.c`. Alternativamente, pode-se baixar o código com o seguinte comando:
+
+```Console
+wget https://raw.githubusercontent.com/fpfrimer/piMSP430/main/codes/contador.c
+```
+
+### Passo 2 - Compilando o código
+
+Compile o código utilizando o comando apresentado na seção [Criando códigos e Programando](#criando-códigos-e-programando), mudando os nomes dos arquivos de entrada e saída como `contador.c` e `contador.elf` respectivamente. 
+
+### Passo 3 - Gravando o código
+
+Os procedimentos dessa seção são semelhantes ao apresentado na seção [Criando códigos e Programando](#criando-códigos-e-programando). Dessa forma, para gravar no kit, chame a ferramenta mspdebug:
+
+```Console
+sudo mspdebug rf2500
+```
+
+Programe o arquivo elf gerado:
+
+```Console
+(mspdebug) prog contador.elf
+```
+
+Execute o código com o comando `run`:
+
+```Console
+(mspdebug) run
+```
+
+Ao gravar o código, os LEDs do kit realizarão a contagem.
+
+### Passo 4 - Conectando ao _stub_ remoto para depuração
+
+Para depurar, primeiro inicie o _stub_ remoto do gdb. Este stub será a interface entre o gdb client e a interface de comunicação com o chip. Ainda dentro do mspdebug digite:
+
+```Console
+(mspdebug) gdb 2000
+```
+
+Esse comando "trava" o mspdebug que fica esperando uma conexão através da porta 2000. Dessa forma, é preciso abrir outro terminal e executar o msp430-gdb com o arquivo gerado pela compilação:
+
+```Console
+msp430-gdb contador.elf
+```
+
+Dentro do cliente GDB, conecte-se no _stub_ para iniciar a seção de depuração:
+
+```Console
+(gdb) target remote localhost:2000
+```
+
+Como se trata de uma conexão remota, preste atenção aos comandos que são diferentes em relação à execução local.
+
+### Passo 4 - Depurando o código
+
+O GDB é uma ferramenta muito poderosa e de código aberto para a depuração de códigos. As possibilidades de comandos são variadas, sendo impossível listar tudo neste tutorial. Dessa forma, será apresentado alguns exemplos de comandos para a depuração do código.
+
+Use o comando `continue` ou `c` para rodar o código. Note que o programa será executado e o cliente GDB ficará em espera, pois nenhum _breakpoint_ foi inserido ainda. Pressione CTRL+C para parar. Para inserir um _breakpoint_ use o comando `break` seguido do nome do arquivo C/C++ e da linha:
+
+```Console
+(gdb) break contador.c:16
+```
+
+Note que a linha 16 representa no código `cont += 1`. Ao rodar novamente a aplicação com o comando `c`, a execução será interrompida na linha 16. Use o comando `print` para imprimir o valor de alguma variável. No caso da variável `cont`:
+
+```Console
+(gdb) print cont
+```
+
+Este comando resultará na seguinte mensagem, indicando que a variável `cont` possui o valor 1309:
+
+```Console
+(gdb) print cont
+$1 = 1309
+```
+
+> Obs.: O usuário que estiver seguindo a este tutorial provavelmente fará a leitura de outro valor.
+
+Execute o comando `c` novamente para a aplicação "rodar" mais um ciclo, parando novamente no _breakpoint_ da linha 16. Imprima novamente o valor da variável `cont` e perceba que ela foi incrementada em uma unidade. Alternativamente, utilize as variantes `print/x` ou `print/t` para imprimir em hexadecimal ou binário, respectivamente.
+
+Agora, faça leitura da variável `delay` e verifique que ela possui o valor 20000, assim como o esperado.
+
+Ajuste o valor de uma variável com o comando `set`. No caso da variável `delay`:
+
+```Console
+(gdb) set delay=30000
+```
+
+Ao fazer a leitura novamente de `delay` note que o valor foi atualizado para 30000. Uso resultará em um atraso maior e a contagem deverá ser mais lenta. No entanto, para verificar esse efeito, é necessário remover o _breakpoint_ da linha 16. Dessa forma, entre com o seguinte comando:
+
+```Console
+(gdb) clear contador.c:16
+```
+
+Rode a aplicação novamente com o comando `c` e perceba que a contagem está mais lenta agora. 
+
+Interrompa novamente a execução pressionando CTRL+C. Execute o comando `info registers` para fazer uma leitura dos estado dos registradores, o resultado será parecido com:
+
+```Console
+(gdb) info registers
+pc/r0: c070  sp/r1: 03fa  sr/r2: 0000     r3: 0000
+fp/r4: 807d     r5: 5a08     r6: 5db6     r7: 932e
+   r8: dadd     r9: 7a17    r10: 0ce8    r11: 2590
+  r12: 84f4    r13: eb24    r14: 7530    r15: 2a0f
+```
+
+Para imprimir o valores de registradores de periféricos, é necessário verificar o endereço de interesse no _datasheet_ do microcontrolador utilizado. Por exemplo, para fazer a leitura do valor armazenado no registrador P1DIR do msp430g2553, deve-se verificar no datasheet do dispositivo que o endereço de memória é o 0x0022. Dessa forma, o comando print deve ser modificado para:
+
+```Console
+(gdb) print{char}0x22
+```
+
+Isso resulta em:
+
+```Console
+(gdb) print{char}0x22
+$11 = 65 'A'
+```
+
+Note que o resultado foi dado em decimal e em caractere ASCII. A opção colocada entre as chaves indica a quantidade de bytes que deve ser lida. no caso de `char` a leitura é de apenas um byte. Para facilitar a leitura pode-se utilizar as alternativas `print/x{char}0x22` e `print/t{char}0x22` para imprimir em hexadecimal e binário respectivamente.
+
+Para ajustar o valor de um registrador de periférico, também pode utilizado o comando `set`. Como exemplo, o registrador P1OUT no msp430g2553, que controla os LEDs, está no endereço 0x0021. Dessa forma, utilize o seguinte comando para apagar os dois LEDs:
+
+
+```Console
+(gdb) set{char}0x21 = 0
+```
+
+Para acender os dois LEDs:
+
+```Console
+(gdb) set{char}0x21 = 0x41
+```
+
+Para registradores de 16 bits mude a opção `char` para `int` tanto no comando `print` quanto no `set`.
+
+## Conclusão
+
+Este tutorial mostrou como programar microcontroladores MSP430 através do Raspberry Pi. Foi apresentado as principais ferramentas no processo de programação e depuração, todas de código aberto. Foi dado ênfase em um fluxo de projeto utilizando linhas de comando, através de um exemplo passo-a-passo.
