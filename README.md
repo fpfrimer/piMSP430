@@ -79,7 +79,7 @@ Para este tutorial serão necessários os seguinte materiais:
  - Fonte de alimentação para o Raspberry Pi;
  - Cabo HDMI;
  - Monitor, teclado e mouse; e
- - Algum Microcontrolador MSP430 com gravador ([MSP-FET](https://www.ti.com/tool/MSP-FET)) ou Kit de desenvolvimento _LaunchPad_ (neste tutorial utilizaremos o MSP-EXP430G2).
+ - Algum Microcontrolador MSP430 com gravador ([MSP-FET](https://www.ti.com/tool/MSP-FET)) ou Kit de desenvolvimento _LaunchPad_ (neste tutorial foi utilizado o MSP-EXP430G2).
 
  Além desses materiais, o usuário deverá possuir algum conhecimento básico de:
 
@@ -175,7 +175,7 @@ wget https://raw.githubusercontent.com/fpfrimer/piMSP430/main/codes/pisca.c
 Para compilar, basta passar o modelo da CPU (mude de acordo com o chip que você esta usando):
 
 ```Console
-msp430-gcc -Os -mmcu=msp430g2553 pisca.c -o pisca.elf
+msp430-gcc -g -Os -mmcu=msp430g2553 pisca.c -o pisca.elf
 ```
 Agora conecte o kit de desenvolvimento em uma das portas USB do Raspberry Pi. Isso deve criar um dispositivo do tipo ttyACM, que você consegue visualizar nas mensagens de log do kernel através do comando `dmseg`.
 
