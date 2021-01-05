@@ -92,7 +92,7 @@ Para este tutorial serão necessários os seguinte materiais:
 Para o MSP430, existem diversas ferramentas _open source_ para o desenvolvimento de projetos. Neste tutorial serão utilizadas as seguintes aplicações:
 
 - [__gcc-msp430__](https://www.systutorials.com/docs/linux/man/1-msp430-gcc/): Porte do gcc (GNU C compiler) para o MSP430;
-- __binutils-msp430__: Ferramentas de manipulação de binários (linker, assembler, etc) para o MSP430;
+- __binutils-msp430__: Ferramentas de manipulação de binários (linker, assembler, etc.) para o MSP430;
 - __msp430mcu__: Arquivos de cabeçalho, _spec files_ e scripts do linker;
 - __msp430-libc__: Biblioteca C padrão;
 - __gdb-msp430__: GNU _Debugger_ para o MSP430; e
@@ -102,7 +102,7 @@ Estas ferramentas fazem parte do projeto [mspgcc](http://www.ti.com/tool/msp430-
 
 <!---É importante notar que, embora não existam limitações de tamanho de código ou tempo de uso (pois trata-se de um _software_ livre), o mspgcc não possui suporte à algumas características presentes em versões proprietárias de outros compiladores. É o caso de opções de otimização de código.--->
 
-Para instalar as ferramentas do mspgcc, abra uma instancia de terminal do Rasberry Pi OS e atualize os repositórios:
+Para instalar as ferramentas do mspgcc, abra uma instancia de terminal do Raspberry Pi OS e atualize os repositórios:
 
 ```console
 sudo apt-get update
