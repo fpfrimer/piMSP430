@@ -64,7 +64,7 @@ Apesar de ser mais antigo, o MSP-EXP430G2 possui praticamente as mesmas caracter
 
 O Raspberry Pi é uma série computadores de tamanho reduzido feitos em uma única placa de circuito (_Single Board Computer_ ou SBC). Os modelos principais possuem o tamanho de um cartão de crédito, assim como pode ser visto na [Figura 4](#rpi).
 
-|[![kit2](./figuras/rpi.jpg "O Raspberry Pi 4. Foto de Miiicihiaieil  Hieinizilieir (Wikipedia)")](https://commons.wikimedia.org/w/index.php?curid=80140656)|
+|[![kit2](./figuras/rpi_small.jpg "O Raspberry Pi 4. Foto de Miiicihiaieil  Hieinizilieir (Wikipedia)")](https://commons.wikimedia.org/w/index.php?curid=80140656)|
 |:---:|
 |__Figura 4 - Imagem do Raspberry Pi 4 Model B__|
 
@@ -295,7 +295,7 @@ Considere o seguinte projeto exemplo:
 
 > Utilize os dois LEDs presentes no kit MSP-EXP430G2 Launchpad para realizar uma contagem de 0 à 3 em binário. Note na Figura 6 que os LEDs estão conectados nos pinos P1.6 (GREEN_LED) e P1.0 (RED_LED).
 > 
-> |[![kit3](./figuras/pinout.png "Pinagem do kit MSP-EXP430G2 Launchpad")](https://energia.nu/pinmaps/img/LaunchPadMSP430G2452-v1.5.jpg)|
+> |[![kit3](./figuras/pinout_small.png "Pinagem do kit MSP-EXP430G2 Launchpad")](https://energia.nu/pinmaps/img/LaunchPadMSP430G2452-v1.5.jpg)|
 > |:---:|
 > |__Figura 6 - Pinagem do kit MSP-EXP430G2 Launchpad__|
 
