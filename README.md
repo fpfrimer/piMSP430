@@ -17,6 +17,7 @@ Este tutorial tem como objetivo apresentar uma metodologia para programar microc
   - [[Opcional] _Shell Script_ para compilação](#opcional-shell-script-para-compilação)
   - [Depurando (_debugando_) o código](#depurando-debugando-o-código)
     - [O mspdebug](#o-mspdebug)
+    - [O msp430-gdb](#o-msp430-gdb)
   - [Fluxo de trabalho simplificado](#fluxo-de-trabalho-simplificado)
     - [Passo 1 - Desenvolver o código inicial](#passo-1---desenvolver-o-código-inicial)
     - [Passo 2 - Compilando o código](#passo-2---compilando-o-código)
@@ -48,7 +49,7 @@ O MSP-EXP430G2ET é o um do modelos mais simples e baratos que permite usar os m
 |:---:|
 |__Figura 2 - MSP-EXP430G2ET LaunchPad: kit de desenvolvimento__|
 
-Assim como o Arduino, o kit MSP-EXP430G2ET possui diversos pinos digitais de entrada e saída (GPIO), permitindo muita versatilidade aos projetos. Além disso, também possui dois LEDs e um botão. Como vantagem em relação à maioria dos modelos de Arduinos, essa placa possui embutida um gravador/depurador de código, permitindo a execução passo-a-passo das instruções.
+Assim como o Arduino, o kit MSP-EXP430G2ET possui diversos pinos digitais de entrada e saída (GPIO), permitindo muita versatilidade aos projetos. Além disso, também possui dois LEDs e um botão. Como vantagem em relação à maioria dos modelos de Arduinos, essa placa possui embutida um gravador/depurador de código, permitindo a execução passo-a-passo das instruções. Além disso, não é necessário nenhum _bootloader_ para gravação.
 
 ### O kit MSP-EXP430G2
 
@@ -78,7 +79,8 @@ Para este tutorial serão necessários os seguinte materiais:
  - Catão microSD com o Raspberry Pi OS instalado ([Veja como clicando aqui](https://www.raspberrypi.org/documentation/installation/installing-images/));
  - Fonte de alimentação para o Raspberry Pi;
  - Cabo HDMI;
- - Monitor, teclado e mouse; e
+ - Monitor, teclado e mouse;
+ - Conexão com a internet; e
  - Algum Microcontrolador MSP430 com gravador ([MSP-FET](https://www.ti.com/tool/MSP-FET)) ou Kit de desenvolvimento _LaunchPad_ (neste tutorial foi utilizado o MSP-EXP430G2).
 
  Além desses materiais, o usuário deverá possuir algum conhecimento básico de:
@@ -177,6 +179,14 @@ Para compilar, basta passar o modelo da CPU (mude de acordo com o chip que você
 ```Console
 msp430-gcc -g -Os -mmcu=msp430g2553 pisca.c -o pisca.elf
 ```
+
+Sobre o comando segue algumas explicações:
+
+- O argumento `-g` é invocado pois trata-se de um programa escrito em C. Importante para a utilização do __msp430-gdb__;
+- `-Os` otimiza o código para tamanho;
+- `-mmcu` indica o microcontrolador de destino;
+- `-o` especifica o arquivo de saída;
+
 Agora conecte o kit de desenvolvimento em uma das portas USB do Raspberry Pi. Isso deve criar um dispositivo do tipo ttyACM, que você consegue visualizar nas mensagens de log do kernel através do comando `dmseg`.
 
 Para gravar no kit basta chamar a ferramenta mspdebug:
@@ -207,7 +217,7 @@ sudo mspdebug rf2500 "prog pisca.elf"
 
 A diferença deste último comando é que o microcontrolador será programado, o código executado e o mspdebug será fechado.
 
-É importante observar que em nenhum momento foi criado o _linker script_. O processo de compilação gerou um arquivo do tipo ELF, padrão para arquivos executáveis. O compilador, de acordo com a opção “-mmcu“, já organizou o código (seções text, data, bss) de forma que a ferramenta mspdebug possa interpretar estas informações, para então endereçar e gravar corretamente os dados na memória flash do microcontrolador.
+É importante observar que em nenhum momento foi criado o _linker script_. O processo de compilação gerou um arquivo do tipo ELF, padrão para arquivos executáveis. O compilador, de acordo com a opção "-mmcu", já organizou o código (seções text, data, bss) de forma que a ferramenta mspdebug possa interpretar estas informações, para então endereçar e gravar corretamente os dados na memória flash do microcontrolador.
 
 A ferramenta mspdebug possui muitas opções. Para uma lista completa das funcionalidades desta ferramenta, acesse sua página de manual:
 
@@ -240,8 +250,6 @@ Para compilar, basta executar o arquivo:
 ## Depurando (_debugando_) o código
 
 O processo de depuração, também conhecido pela expressão em inglês _debug_ (remoção de _bugs_), pode exigir do usuário um conhecimento grande sobre sobre o microcontrolador e da ferramenta de depuração. No caso do __mspdebug__ e do __msp430-gdb__, por não existir um interface gráfica, o processo de depuração pode ser complicado para usuários iniciantes ou, até mesmo, intermediários. Dessa forma, é recomendado a leitura do manual da ferramenta (`man mspdebug` e `man msp430-gdb`) e o estudo aprofundado sobre microcontroladores, especialmente o msp430.
-
-Esta seção tem o intuito de introduzir o assunto, mostrando um exemplo fluxo de trabalho para utilização do msp430-gdb em conjunto com o mspdebug.
 
 ### O mspdebug
 
@@ -287,9 +295,23 @@ __wdt_clear_value+0xbe14:
 
 Como pode ser notado, ao executar o comando `step`, o código pode ser executado instrução por instrução com base no código de máquina gerado no processo de compilação. Dessa forma, a depuração de um código escrito em linguagem C/C++ não é possível através do mspdebug. Neste sentido, a ferramenta msp430-gdb deve ser utilizada em conjunto com o mspdebug para depuração do código fonte.
 
-A próxima seção apresenta um fluxo de trabalho simplificado para depuração de projetos com microcontroladores MSP430.
+### O msp430-gdb
+
+O GDB (GNU _Project Debugger_) é uma ferramenta para:  observar um programa enquanto este executa; e ver o estado no momento que a execução falha. Permite: 
+
+- iniciar a execução de um programa;
+- executar linha-a-linha;
+- especificar pontos de paragem;
+- imprimir valores de variáveis;
+- entre outras funcionalidades.
+
+O __msp430-gdb__ é uma ferramenta para conectar o GDB com os microcontroladores MSP430 para depurar o software que está sendo desenvolvido.
+
+A próxima seção apresenta um fluxo de trabalho simplificado para depuração de projetos com microcontroladores MSP430 através do __msp430-gdb__.
 
 ## Fluxo de trabalho simplificado
+
+Esta seção tem o intuito de apresentar as funcionalidades das ferramentas apresentadas, mostrando um exemplo fluxo de trabalho para utilização do __msp430-gdb__ em conjunto com o __mspdebug__.
 
 Considere o seguinte projeto exemplo: 
 
