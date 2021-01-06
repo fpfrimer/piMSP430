@@ -137,7 +137,7 @@ Para outros procedimentos de instalação, acesse a página do projeto [mspgcc](
 
 ## Criando códigos e Programando
 
-Para demostrar o fluxo de projeto utilizando as ferramentas instaladas, um simples código para piscar os dois LEDs do kit MSP-EXP430G2 será utilizado. Primeiramente, é recomendável criar uma pasta para o projeto. Em seguida,
+Para demostrar o processo de programação utilizando as ferramentas instaladas, um simples código para piscar os dois LEDs do kit MSP-EXP430G2 será utilizado. Primeiramente, é recomendável criar uma pasta para o projeto. Em seguida,
 crie o código fonte utilizando o editor de sua preferencia. Para usuários iniciantes recomenda-se utilizar o nano:
 
 ```console
@@ -249,7 +249,7 @@ Para compilar, basta executar o arquivo:
 
 ## Depurando (_debugando_) o código
 
-O processo de depuração, também conhecido pela expressão em inglês _debug_ (remoção de _bugs_), pode exigir do usuário um conhecimento grande sobre sobre o microcontrolador e da ferramenta de depuração. No caso do __mspdebug__ e do __msp430-gdb__, por não existir um interface gráfica, o processo de depuração pode ser complicado para usuários iniciantes ou, até mesmo, intermediários. Dessa forma, é recomendado a leitura do manual da ferramenta (`man mspdebug` e `man msp430-gdb`) e o estudo aprofundado sobre microcontroladores, especialmente o msp430.
+O processo de depuração, também conhecido pela expressão em inglês _debug_ (remoção de _bugs_), pode exigir do usuário um conhecimento aprofundado sobre sobre o microcontrolador e da ferramenta de depuração. No caso do __mspdebug__ e do __msp430-gdb__, por não existir um interface gráfica, o processo de depuração pode ser complicado para usuários iniciantes ou, até mesmo, intermediários. Dessa forma, é recomendado a leitura do manual da ferramenta (`man mspdebug` e `man msp430-gdb`) e o estudo aprofundado sobre microcontroladores, especialmente o msp430.
 
 ### O mspdebug
 
@@ -381,11 +381,11 @@ Execute o código com o comando `run`:
 (mspdebug) run
 ```
 
-Ao gravar o código, os LEDs do kit realizarão a contagem.
+Ao gravar o código, os LEDs do kit realizarão a contagem. Pressione CTRL+C para parar a execução.
 
 ### Passo 4 - Conectando ao _stub_ remoto para depuração
 
-Para depurar, primeiro inicie o _stub_ remoto do gdb. Este stub será a interface entre o gdb client e a interface de comunicação com o chip. Ainda dentro do mspdebug digite:
+Para depurar, inicie um _stub_ remoto do gdb. Este _stub_ será a interface entre o cliente gdb e a interface de comunicação com o chip. Ainda dentro do mspdebug digite:
 
 ```Console
 (mspdebug) gdb 2000
@@ -440,13 +440,13 @@ Ajuste o valor de uma variável com o comando `set`. No caso da variável `delay
 (gdb) set delay=30000
 ```
 
-Ao fazer a leitura novamente de `delay` note que o valor foi atualizado para 30000. Uso resultará em um atraso maior e a contagem deverá ser mais lenta. No entanto, para verificar esse efeito, é necessário remover o _breakpoint_ da linha 16. Dessa forma, entre com o seguinte comando:
+Ao fazer a leitura novamente de `delay` note que o valor foi atualizado para 30000. Isso resultará em um atraso maior e a contagem deverá ser mais lenta. No entanto, para verificar esse efeito, é necessário remover o _breakpoint_ da linha 16. Dessa forma, entre com o seguinte comando:
 
 ```Console
 (gdb) clear contador.c:16
 ```
 
-Rode a aplicação novamente com o comando `c` e perceba que a contagem está mais lenta agora. 
+Rode a aplicação novamente com o comando `c` e perceba que a contagem nos LEDs está mais lenta agora. 
 
 Interrompa novamente a execução pressionando CTRL+C. Execute o comando `info registers` para fazer uma leitura dos estado dos registradores, o resultado será parecido com:
 
@@ -458,7 +458,7 @@ fp/r4: 807d     r5: 5a08     r6: 5db6     r7: 932e
   r12: 84f4    r13: eb24    r14: 7530    r15: 2a0f
 ```
 
-Para imprimir o valores de registradores de periféricos, é necessário verificar o endereço de interesse no _datasheet_ do microcontrolador utilizado. Por exemplo, para fazer a leitura do valor armazenado no registrador P1DIR do msp430g2553, deve-se verificar no datasheet do dispositivo que o endereço de memória é o 0x0022. Dessa forma, o comando print deve ser modificado para:
+Para imprimir o valores de registradores de periféricos, é necessário verificar o endereço de interesse no _datasheet_ do microcontrolador. Por exemplo, para fazer a leitura do valor armazenado no registrador P1DIR do msp430g2553, deve-se verificar no datasheet do dispositivo que o endereço de memória é o 0x0022. Dessa forma, o comando print deve ser modificado para:
 
 ```Console
 (gdb) print{char}0x22
@@ -471,9 +471,9 @@ Isso resulta em:
 $11 = 65 'A'
 ```
 
-Note que o resultado foi dado em decimal e em caractere ASCII. A opção colocada entre as chaves indica a quantidade de bytes que deve ser lida. no caso de `char` a leitura é de apenas um byte. Para facilitar a leitura pode-se utilizar as alternativas `print/x{char}0x22` e `print/t{char}0x22` para imprimir em hexadecimal e binário respectivamente.
+Note que o resultado foi dado em decimal e em caractere ASCII. A opção colocada entre as chaves indica a quantidade de bytes que deve ser lida. No caso de `char` a leitura é de apenas um byte. Para facilitar a leitura, pode-se utilizar as alternativas `print/x{char}0x22` e `print/t{char}0x22` para imprimir em hexadecimal e binário respectivamente.
 
-Para ajustar o valor de um registrador de periférico, também pode utilizado o comando `set`. Como exemplo, o registrador P1OUT no msp430g2553, que controla os LEDs, está no endereço 0x0021. Dessa forma, utilize o seguinte comando para apagar os dois LEDs:
+Para ajustar o valor de um registrador de periférico, também pode ser utilizado o comando `set`. Como exemplo, o registrador P1OUT no msp430g2553, que controla os LEDs, está no endereço 0x0021. Dessa forma, utilize o seguinte comando para apagar os dois LEDs:
 
 
 ```Console
@@ -485,6 +485,8 @@ Para acender os dois LEDs:
 ```Console
 (gdb) set{char}0x21 = 0x41
 ```
+
+> Obs.: Cuidado ao trocar valores dos registradores, tenha certeza do que está fazendo antes de executar. Dependendo do caso o micro pode ser danificado.
 
 Para registradores de 16 bits mude a opção `char` para `int` tanto no comando `print` quanto no `set`.
 
